@@ -29,8 +29,8 @@ using namespace std;
 
 
 std::string chain_start, chain_end, urdf_param;
-double timeout = 0.005;
-double eps = 1e-5;
+double timeout = 10;
+double eps = 1e-1;
 ros::Publisher jointCommandPublisher;
 double joint_state[6];
 
@@ -108,7 +108,7 @@ void findIKSolution(const KDL::Frame &end_effector_pose, const std::string &limb
      result.data[0], result.data[1], result.data[2], 
      result.data[3], result.data[4], result.data[5], 
      result.data[6]);
-      jointCommandPublisher.publish(jointCommand);
+     jointCommandPublisher.publish(jointCommand);
   }
 }
 
@@ -120,13 +120,20 @@ void findIKSolution(const KDL::Frame &end_effector_pose, const std::string &limb
 void callBack3(const baxter_core_msgs::EndpointState &callBackData2){
     ROS_INFO("test ik");
     geometry_msgs::Pose temp;
-    temp.position.x = callBackData2.pose.position.x;
+    temp.position.x = 0.273476;
+    temp.position.y = -0.338266;
+    temp.position.z = 0.515312;
+    temp.orientation.x = -0.034;
+    temp.orientation.y = 0.999;
+    temp.orientation.z = -0.029;
+    temp.orientation.w = -0.003;
+   /* temp.position.x = callBackData2.pose.position.x;
     temp.position.y = callBackData2.pose.position.y;
     temp.position.z = callBackData2.pose.position.z + 0.005;
     temp.orientation.x = callBackData2.pose.orientation.x;
     temp.orientation.y = callBackData2.pose.orientation.y;
     temp.orientation.z = callBackData2.pose.orientation.z;
-    temp.orientation.w = callBackData2.pose.orientation.w;
+    temp.orientation.w = callBackData2.pose.orientation.w; */
     KDL::Frame end_effector_pose;
     tf::poseMsgToKDL(temp, end_effector_pose);
     // Compute the IK Solution and publish the solution from within the method
@@ -135,6 +142,15 @@ void callBack3(const baxter_core_msgs::EndpointState &callBackData2){
      
 void callBack_marker_change(const geometry_msgs::Pose callBackData){	
   ROS_INFO("get the listener information");
+    /* geometry_msgs::Pose temp;
+    temp.position.x = 0.773476;
+    temp.position.y = -0.338266;
+    temp.position.z = -0.315312;
+    temp.orientation.x = -0.034;
+    temp.orientation.y = 0.999;
+    temp.orientation.z = -0.029;
+    temp.orientation.w = -0.003;*/
+
   KDL::Frame end_effector_pose;
   cout << "marker_pose"<<endl;
   cout << callBackData;
@@ -278,7 +294,7 @@ int main(int argc, char** argv)
   //ros::Subscriber subscriber2 = nodeHandle.subscribe("/robot/limb/right/endpoint_state", 1, callBack3);
   
 
-  jointCommandPublisher = nodeHandle.advertise<baxter_core_msgs::JointCommand>("/robot/limb/right/joint_command", 1);
+  jointCommandPublisher = nodeHandle.advertise<baxter_core_msgs::JointCommand>("/robot/limb/right/joint_commands", 1);
 
   ros::spin();
   return 0;
